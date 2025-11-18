@@ -8,11 +8,13 @@ from utils.config import final_text_from_response
 
 
 async def run_runner(agent: Agent, request: str):
-    """Helper function to run an agent with InMemoryRunner."""
+    """
+    Runs the agent and returns the final answer.
+    Priority: 1. Model's text explanation. 2. The raw tool output (if model is silent).
+    """
     runner = InMemoryRunner(agent=agent)
     response = await runner.run_debug(request)
-    # return response.content
-    # Iterate through events to find the text response from the model
+
     return await final_text_from_response(response)
 
 
