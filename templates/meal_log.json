@@ -1,4 +1,18 @@
 [
-  {"date": "2025-11-18", "recipe": "Chicken Curry"},
-  {"date": "2025-11-19", "recipe": "Tofu Stir Fry"}
+  {
+    "date": "2025-11-18",
+    "recipe": "Chicken Curry"
+  },
+  {
+    "date": "2025-11-19",
+    "recipe": "Tofu Stir Fry"
+  },
+  {
+    "date": "2025-11-20",
+    "recipe": "Square Deviled Eggs"
+  },
+  {
+    "date": "2025-11-20",
+    "recipe": "Easy Cheesy Scrambled Eggs"
+  }
 ]
