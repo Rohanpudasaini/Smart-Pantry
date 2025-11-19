@@ -5,16 +5,16 @@ from dotenv import load_dotenv
 from google.adk import Agent
 from google.adk.models.google_llm import Gemini
 
-load_dotenv()
-API_KEY = os.getenv("RECIPE_API_KEY")
-if not API_KEY:
-    raise ValueError("RECIPE_API_KEY not found in environment variables.")
-
 API_BASE_URL = "https://api.spoonacular.com/recipes/findByIngredients"
 
 
 def search_recipes_tool(ingredients: str):
     """Searches for recipes based on ingredients."""
+    from dotenv import load_dotenv
+    load_dotenv()
+    API_KEY = os.getenv("RECIPE_API_KEY")
+    if not API_KEY:
+        raise ValueError("RECIPE_API_KEY not found in environment variables.")
     print("Searching recipes for ingredients:", ingredients)
     params = {
         "ingredients": ingredients,
