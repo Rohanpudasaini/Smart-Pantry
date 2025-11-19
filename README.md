@@ -67,6 +67,7 @@ Follow these steps to build the project. Check them off as you go!
 - [ ] **Modify Step 3/6:** Update the LLM prompts to include: "Here is the user's meal history: `[...log...]`. You **must** suggest a new recipe that is not on this list."
 - [ ] **Step 8 (New):** After the plan is generated, use `FileHandlingAgent` to `append` the new meal (e.g., `{"date": "2025-11-16", "recipe": "Chicken Tacos"}`) to `meal_log.json`.
 
+
 ### Phase 4: Polish & Error Handling
 - [ ] Add error handling for when `SpoonacularAgent` finds 0 recipes. (The agent should tell the user this).
 - [ ] Add error handling for when `pantry.txt` is empty. (The agent should ask the user to fill it).
