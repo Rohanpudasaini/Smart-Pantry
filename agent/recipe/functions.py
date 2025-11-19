@@ -21,12 +21,25 @@ def search_recipes_tool(ingredients: str):
         "number": 3,
         "apiKey": API_KEY,
     }
-    with httpx.Client() as client:
-        response = client.get(API_BASE_URL, params=params)
-        response.raise_for_status()
-        data = response.json()
-    recipe_names = [recipe["title"] for recipe in data]
-    return f"Found recipes: {', '.join(recipe_names)}"
+    try:
+        with httpx.Client() as client:
+            response = client.get(API_BASE_URL, params=params)
+            response.raise_for_status()
+            data = response.json()
+        if not isinstance(data, list):
+            return "Error: Unexpected response format from recipe API."
+        recipe_names = []
+        for recipe in data:
+            title = recipe.get("title")
+            if title:
+                recipe_names.append(title)
+        if not recipe_names:
+            return "No recipes found for the given ingredients."
+        return f"Found recipes: {', '.join(recipe_names)}"
+    except httpx.HTTPError as e:
+        return f"Error: Failed to fetch recipes from API. {str(e)}"
+    except Exception as e:
+        return f"Error: An unexpected error occurred. {str(e)}"
 
 
 chef_agent = Agent(
