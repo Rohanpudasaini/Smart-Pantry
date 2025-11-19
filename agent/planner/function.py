@@ -38,17 +38,18 @@ async def ask_nutritionist(request: str):
 
 def save_plan_file(content: str):
     """Saves the final markdown to a file.
+
     Args:
         content (str): The markdown content to save.
-        format:
-            "
-                ## Meal Plan:
 
-                ### Today:
-                **Bbq Chicken and Goat Cheese Ravioli**
-                *   **Protein:** 21.58g
-                *   **Fat:** 29.84g
-                *   **Carbs:** 0.12g
+    Example format:
+        ## Meal Plan:
+
+        ### Today:
+        **Bbq Chicken and Goat Cheese Ravioli**
+        *   **Protein:** 21.58g
+        *   **Fat:** 29.84g
+        *   **Carbs:** 0.12g
     Returns:
         str: Confirmation message.
     """
