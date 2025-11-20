@@ -1,7 +1,5 @@
 import argparse
 import asyncio
-import os
-import sys
 
 from dotenv import load_dotenv
 from google.adk.runners import Runner
@@ -25,6 +23,10 @@ async def parse_arguments():
 
     args = parser.parse_args()
     message = args.message or args.positional_message
+    if not message:
+        raise ValueError(
+            "Please provide a message using --message or as a positional argument."
+        )
     return message
 
 

@@ -23,9 +23,10 @@ def search_recipes_tool(ingredients: str):
     }
     with httpx.Client() as client:
         response = client.get(API_BASE_URL, params=params)
-        response.raise_for_status()
+        # response.raise_for_status()
         data = response.json()
     recipe_names = [recipe["title"] for recipe in data]
+    print("Found recipes:", recipe_names)
     return f"Found recipes: {', '.join(recipe_names)}"
 
 
