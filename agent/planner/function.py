@@ -3,12 +3,13 @@ import json
 
 from google.adk import Agent
 from google.adk.models.google_llm import Gemini
-from google.adk.runners import InMemoryRunner
+from google.adk.runners import Runner
+from google.adk.sessions import InMemorySessionService
+from google.genai import types
 
 from agent.file_handeling.functions import get_meal_history, get_pantry_items
 from agent.macros.functions import nutritionist_agent
 from agent.recipe.functions import chef_agent
-from utils.config import final_text_from_response
 
 
 async def run_runner(agent: Agent, request: str):
@@ -16,23 +17,58 @@ async def run_runner(agent: Agent, request: str):
     Runs the agent and returns the final answer.
     Priority: 1. Model's text explanation. 2. The raw tool output (if model is silent).
     """
-    runner = InMemoryRunner(agent=agent)
-    response = await runner.run_debug(request)
+    app_name, user_id, session_id = "agents", "user1", "session1"
+    session_service = InMemorySessionService()
+    runner = Runner(agent=agent, app_name=app_name, session_service=session_service)
+    _ = await session_service.create_session(
+        app_name=app_name, user_id=user_id, session_id=session_id
+    )
 
-    return await final_text_from_response(response)
+    message = types.Content(
+        role="user",
+        parts=[types.Part(text=request)],
+    )
+    full_response_text = ""
+    final_text = ""
+    for event in runner.run(
+        user_id=user_id, session_id=session_id, new_message=message
+    ):
+        if (
+            event.partial
+            and event.content
+            and event.content.parts
+            and event.content.parts[0].text
+        ):
+            full_response_text += event.content.parts[0].text
+        if event.is_final_response:
+            final_text = full_response_text + str(
+                event.content.parts[0].text if not event.partial else ""  # type: ignore
+            )
+            print(final_text.strip())
+    return final_text.strip()
 
 
 async def ask_chef(request: str):
-    """Use this tool to ask the Chef Agent for recipe ideas."""
-    # In ADK, we often use .chat() or .run() depending on the version
+    """Use this tool to ask the Chef Agent for recipe ideas.
+    The tool takes a request string containing pantry items separated by commas,
+    and returns recipe ideas which have those pantry items.
+    args:
+        request (str): The request string containing pantry items separated by commas.
+    returns:
+        str: The recipe ideas from the Chef Agent.
+    """
     return await run_runner(chef_agent, request)
-
-    # response = chef_agent.chat(request)
-    # return response.content
 
 
 async def ask_nutritionist(request: str):
-    """Use this tool to ask the Nutritionist Agent for macro data."""
+    """Use this tool to ask the Nutritionist Agent for macro data.
+    args:
+        request (str): The request string containing name of the food item.
+    returns:
+        str: The macro data from the Nutritionist Agent.
+        example:
+        Found 'Chicken': Protein: 21.58g, Fat: 29.84g, Carbs: 0.12g
+    """
     return await run_runner(nutritionist_agent, request)
 
 
@@ -96,7 +132,8 @@ manager_agent = Agent(
     3. Use `get_meal_history` to understand past meals.
     4. Call `ask_chef` to get recipe ideas using the pantry items.
     5. Pick the best recipe and call `ask_nutritionist` and ensure same recipe isn't repeated.
-    6. If it fits the goal, write the final plan using `save_plan_file`.
+    6. Always write the final plan using `save_plan_file`.
+    7. If there are more than one recipe ideas, pick any one and **always** save the final plan using `save_plan_file`.
     """,
     # The Manager's tools are the FUNCTIONS that trigger the other agents
     tools=[

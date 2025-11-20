@@ -2,7 +2,7 @@ import os
 
 import httpx
 from dotenv import load_dotenv
-from google.adk.agents import Agent
+from google.adk import Agent
 from google.adk.models.google_llm import Gemini
 
 from utils.config import NUTRIENT_IDS
